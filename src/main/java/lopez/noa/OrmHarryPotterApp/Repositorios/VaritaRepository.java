@@ -1,6 +1,7 @@
 package lopez.noa.OrmHarryPotterApp.Repositorios;
 
 import lopez.noa.OrmHarryPotterApp.Modelos.Varita;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +13,7 @@ public interface VaritaRepository extends JpaRepository<Varita, Integer> {
 
     List<Varita> findByNucleoContainingIgnoreCase(String nucleo);
 
-    List<Varita> findByPersonajeIsNull();
+    List<Varita> findByPersonajeIsNull(Sort ordneacion);
 
-    List<Varita> findByPersonajeIsNotNull();
+    List<Varita> findByPersonajeIsNotNull(Sort ordenacion);
 }

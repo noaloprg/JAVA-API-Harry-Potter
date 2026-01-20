@@ -81,8 +81,8 @@ public class VaritaService implements IModeloService<VaritaResponseDTO, Integer>
 
         //si solo quiere las que estan usadas
         List<Varita> listaRespuesta = usadas
-                ? varitaRepo.findByPersonajeIsNotNull()
-                : varitaRepo.findByPersonajeIsNull();
+                ? varitaRepo.findByPersonajeIsNotNull(ordenacion)
+                : varitaRepo.findByPersonajeIsNull(ordenacion);
 
         return listaRespuesta.stream().map(var -> VaritaMapper.toVaritaSummary(var)).toList();
     }
