@@ -9,7 +9,9 @@ import lopez.noa.OrmHarryPotterApp.Mappers.HechizoMapper;
 import lopez.noa.OrmHarryPotterApp.Modelos.Hechizo;
 import lopez.noa.OrmHarryPotterApp.Repositorios.HechizoRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -58,6 +60,32 @@ public class HechizoService implements IModeloService<HechizoResponseDTO, BigInt
     public Page<HechizoResponseDTO> getSegunPaginado(Pageable paginacion) {
         return hechizoRepo.findAll(paginacion)
                 .map(hechizo -> HechizoMapper.toHechizoResponse(hechizo));
+
+    }
+
+    //paginacion mas ordenacion
+    public Page<HechizoResponseDTO> getSegunPaginadoOrdenado(Pageable paginacion, String tipoOrdenacion) {
+        //por defecto Sort no ordenara nada
+        Sort ordenacion = Sort.unsorted();
+
+        //define el tipo de ordenacion segun la palabra que venga
+        if (tipoOrdenacion != null) {
+            if (tipoOrdenacion.equalsIgnoreCase("desc")) ordenacion = Sort.by("nombre").descending();
+            else if (tipoOrdenacion.equalsIgnoreCase("asc")) ordenacion = Sort.by("nombre").ascending();
+        }
+
+        //crea la paginacion junto con la ordenacion
+        Pageable paginacionCompleo = PageRequest.of(
+                /*segun los valores que vengan de la URL del usuario,
+                 y sino por los valores por defecto que tiene Pageable
+                 */
+                paginacion.getPageNumber(),
+                paginacion.getPageSize(),
+                ordenacion
+        );
+
+        //lo aplica al metodo del repositorio
+        return hechizoRepo.findAll(paginacionCompleo).map(h -> HechizoMapper.toHechizoResponse(h));
 
     }
 

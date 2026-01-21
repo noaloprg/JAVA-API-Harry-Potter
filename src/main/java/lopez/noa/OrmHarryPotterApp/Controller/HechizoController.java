@@ -9,10 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,8 +31,14 @@ public class HechizoController {
 
     //con paginacion
     @GetMapping("/paginados")
-    public ResponseEntity<Page<HechizoResponseDTO>> getByPageable(@PageableDefault(size = 5, page = 0) Pageable paginacion) {
+    public ResponseEntity<Page<HechizoResponseDTO>> getByPageable(@PageableDefault(size = 5) Pageable paginacion) {
         return ResponseEntity.ok(servicio.getSegunPaginado(paginacion));
+    }
+
+    @GetMapping("/paginados2")
+    public ResponseEntity<Page<HechizoResponseDTO>> getByPageableSort(@PageableDefault Pageable paginacion, @RequestParam(required = false) String ordenacion) {
+        return ResponseEntity.ok(servicio.getSegunPaginadoOrdenado(paginacion, ordenacion));
+
     }
 
     //CREACION
