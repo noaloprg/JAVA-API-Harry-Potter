@@ -16,9 +16,9 @@ public class CasaMapper {
      * @param casa Entidad donde se almacenan los nuevos valores
      */
     public static void asignarTodosCamposCasa(CasaCreateDTO dto, Casa casa) {
-        casa.setEscudoImagen(dto.escudoImagen());
-        casa.setFundador(dto.fundador());
-        casa.setNombre(dto.nombre());
+        casa.setEscudoImagen(dto.getEscudoImagen());
+        casa.setFundador(dto.getFundador());
+        casa.setNombre(dto.getNombre());
     }
 
     /*

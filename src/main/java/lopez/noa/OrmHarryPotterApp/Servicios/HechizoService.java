@@ -121,7 +121,7 @@ public class HechizoService implements IModeloService<HechizoResponseDTO, BigInt
         List<HechizoResponseDTO> listaRespuestas = new ArrayList<>();
 
         for (HechizoCreateDTO dto : listaHechizosCreate) {
-            Optional<Hechizo> existente = hechizoRepo.findByNombre(dto.nombre());
+            Optional<Hechizo> existente = hechizoRepo.findByNombre(dto.getNombre());
 
             if (existente.isPresent()) throw new AlreadyExistsException(NOMBRE_ENTIDAD);
             else {

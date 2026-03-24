@@ -7,9 +7,9 @@ import lopez.noa.OrmHarryPotterApp.Modelos.Hechizo;
 public class HechizoMapper {
 
     public static void asignarTodosCamposHechizo(HechizoCreateDTO dto, Hechizo hechizo) {
-        hechizo.setNombre(dto.nombre());
-        hechizo.setDescripcion(dto.descripcion());
-        hechizo.setTipo(dto.tipo());
+        hechizo.setNombre(dto.getNombre());
+        hechizo.setDescripcion(dto.getDescripcion());
+        hechizo.setTipo(dto.getTipo());
     }
 
     public static Hechizo crearHechizoDesdeDTO(HechizoCreateDTO dto) {
@@ -18,7 +18,7 @@ public class HechizoMapper {
         return hechizo;
     }
 
-    public static HechizoResponseDTO toHechizoResponse(Hechizo h){
+    public static HechizoResponseDTO toHechizoResponse(Hechizo h) {
         return new HechizoResponseDTO(h.getId(), h.getDescripcion(), h.getNombre(), h.getTipo());
     }
 
