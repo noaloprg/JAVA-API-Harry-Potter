@@ -10,9 +10,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-// Controlador de excepciones de la app
+/**
+ * Controlador de excepciones de la app
+ */
 public class HarryPotterExceptionHandler {
-    //Recurso no encontrado
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<Map<String, String>> noSeEncontroRegistro(ResourceNotFound e) {
         Map<String, String> errores = new HashMap<>();
@@ -21,8 +22,8 @@ public class HarryPotterExceptionHandler {
         return ResponseEntity.badRequest().body(errores);
     }
 
-    //Relacion 1 a N ya existente
-    @ExceptionHandler
+
+    @ExceptionHandler(AlreadyAssignedExcepction.class)
     public ResponseEntity<Map<String, String>> asignacionYaExistente(AlreadyAssignedExcepction e) {
         Map<String, String> errores = new HashMap<>();
 
@@ -31,6 +32,7 @@ public class HarryPotterExceptionHandler {
         return ResponseEntity.badRequest().body(errores);
     }
 
+    @ExceptionHandler(BrokenWandException.class)
     // Varita no asignable porque esta rota
     public ResponseEntity<Map<String, String>> varitaRota(BrokenWandException e) {
         Map<String, String> errores = new HashMap<>();
@@ -41,7 +43,8 @@ public class HarryPotterExceptionHandler {
         return ResponseEntity.badRequest().body(errores);
     }
 
-    //Recurso ya existente
+
+    @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> recursoYaExiste(AlreadyExistsException e) {
         Map<String, String> errores = new HashMap<>();
 
@@ -50,8 +53,12 @@ public class HarryPotterExceptionHandler {
         return ResponseEntity.badRequest().body(errores);
     }
 
-    // se lanza cuando una atributo con alguna etiqueta de validacion no es cumple
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    /**
+     * se lanza cuando una atributo con alguna etiqueta de validacion no es cumple
+     * @return mensaje del error
+     */
     public ResponseEntity<String> manejarValidacion(MethodArgumentNotValidException ex) {
         String mensaje = ex.getBindingResult()
                 .getFieldErrors()

@@ -1,7 +1,9 @@
 package lopez.noa.OrmHarryPotterApp.Exception;
 
-// Excepcion de relacion ya existente
-//para relaciones 1:N, donde N se relaciona con 1
+/**
+ * Excepcion de relacion ya existente para relaciones 1:N, donde N se relaciona con 1
+ */
+
 public class AlreadyAssignedExcepction extends RuntimeException {
     public AlreadyAssignedExcepction(String message) {
         super(message);

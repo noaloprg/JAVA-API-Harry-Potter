@@ -1,6 +1,8 @@
 package lopez.noa.OrmHarryPotterApp.Exception;
 
-// Excepcion para cuando un varita se intenta asignar pero rota == true
+/**
+ * Excepcion para cuando un {@link lopez.noa.OrmHarryPotterApp.Modelos.Varita} se intenta asignar pero {@code rota == true}
+ */
 public class BrokenWandException extends RuntimeException {
     public BrokenWandException(String message) {
         super(message);
