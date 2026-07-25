@@ -6,6 +6,7 @@ import lopez.noa.OrmHarryPotterApp.Modelos.TipoSangre;
 import java.time.LocalDate;
 import java.util.List;
 
+// DTO de creacion de personaje junnto con hechizos
 public class PersonajeHechizoCreateDTO extends PersonajeCreateDTO {
     //lista porque se peude crear un Perosnaje ya con varios hechizos
     private List<HechizoCreateDTO> listahechizos;

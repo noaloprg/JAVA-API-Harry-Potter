@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lopez.noa.OrmHarryPotterApp.Modelos.TipoHechizo;
 
+// DTO de creacion de hechizo
 public class HechizoCreateDTO {
     //LA RELACION CON PERSONAJE SE HACE EN UN DTO AUXILIAR
     @Size(max = 255, message = "El atributo 'descripcion' de Hechizo no puede tener mas de 255 caracteres")

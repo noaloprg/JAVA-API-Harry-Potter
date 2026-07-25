@@ -2,6 +2,7 @@ package lopez.noa.OrmHarryPotterApp.DTO.PersonajeDTO;
 
 import lopez.noa.OrmHarryPotterApp.Modelos.TipoSangre;
 
+// DTO de respuesta
 public class  PersonajeResponseDTO{
         private Integer id;
         private String nombre;

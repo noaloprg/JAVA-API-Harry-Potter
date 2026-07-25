@@ -1,5 +1,6 @@
 package lopez.noa.OrmHarryPotterApp.DTO.CasaDTO;
 
+// DTO de respuesta
 public class CasaResponseDTO {
 
     Integer id;

@@ -4,6 +4,7 @@ import lopez.noa.OrmHarryPotterApp.DTO.HechizoDTO.HechizoResponseDTO;
 
 import java.util.List;
 
+// DTO de respuesta de personaje y sus hechizos
 public class PersonajeHechizoResponseDTO {
     PersonajeResponseDTO personaje;
     List<HechizoResponseDTO> hechizo;

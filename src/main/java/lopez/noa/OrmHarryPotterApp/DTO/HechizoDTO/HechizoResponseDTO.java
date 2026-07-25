@@ -2,6 +2,7 @@ package lopez.noa.OrmHarryPotterApp.DTO.HechizoDTO;
 
 import lopez.noa.OrmHarryPotterApp.Modelos.TipoHechizo;
 
+// DTO de respuesta
 public class HechizoResponseDTO {
     private Long id;
     private String descripcion;

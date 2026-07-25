@@ -14,6 +14,7 @@ import lopez.noa.OrmHarryPotterApp.Repositorios.CasaRepository;
 import lopez.noa.OrmHarryPotterApp.Repositorios.HechizoRepository;
 import lopez.noa.OrmHarryPotterApp.Repositorios.PersonajeRepository;
 import lopez.noa.OrmHarryPotterApp.Repositorios.VaritaRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 

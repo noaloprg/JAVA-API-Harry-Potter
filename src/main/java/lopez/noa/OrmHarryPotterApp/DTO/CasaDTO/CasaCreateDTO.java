@@ -3,6 +3,7 @@ package lopez.noa.OrmHarryPotterApp.DTO.CasaDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+// DTO de creacion de Casas
 public class CasaCreateDTO {
 
     @Size(max = 50, message = "El máximo de caracteres del 'escudoImagen' de Casa es de 50")

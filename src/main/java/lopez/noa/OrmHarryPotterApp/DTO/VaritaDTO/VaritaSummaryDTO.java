@@ -2,6 +2,7 @@ package lopez.noa.OrmHarryPotterApp.DTO.VaritaDTO;
 
 import java.math.BigDecimal;
 
+// DTO de respuesta resumida
 public class VaritaSummaryDTO {
     private int id;
     private BigDecimal longitud;

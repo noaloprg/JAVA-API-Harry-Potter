@@ -4,6 +4,7 @@ import lopez.noa.OrmHarryPotterApp.DTO.VaritaDTO.VaritaResponseDTO;
 
 import java.util.List;
 
+// DTO de respuesta de personaje y sus varitas
 public class PersonajeVaritaResponseDTO {
     private PersonajeResponseDTO personaje;
     private List<VaritaResponseDTO> listaVaritas;

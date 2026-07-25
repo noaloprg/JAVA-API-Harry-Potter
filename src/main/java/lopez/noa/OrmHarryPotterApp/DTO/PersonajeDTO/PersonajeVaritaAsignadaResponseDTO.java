@@ -2,6 +2,7 @@ package lopez.noa.OrmHarryPotterApp.DTO.PersonajeDTO;
 
 import lopez.noa.OrmHarryPotterApp.DTO.VaritaDTO.VaritaResponseDTO;
 
+// DTO de respuesta al asignar una varita a un personaje
 public class PersonajeVaritaAsignadaResponseDTO {
     private int id;
     private String nombrePersonaje;
