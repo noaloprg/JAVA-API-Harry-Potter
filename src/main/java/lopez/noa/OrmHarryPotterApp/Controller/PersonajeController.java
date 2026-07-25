@@ -10,17 +10,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/personajes")
 public class PersonajeController {
     private final PersonajeService servicio;
 
-    //inyeccion
     public PersonajeController(PersonajeService servicio) {
         this.servicio = servicio;
     }
 
-    //GET
+    //Metodos de OBTENCION
     @GetMapping
     public ResponseEntity<List<PersonajeResponseDTO>> getAll() {
         return ResponseEntity.ok(servicio.getAll());
@@ -41,7 +40,7 @@ public class PersonajeController {
         return ResponseEntity.ok(servicio.getById(id));
     }
 
-    //POST
+    //CREACION
     //crear personaje normal
     @PostMapping
     public ResponseEntity<PersonajeResponseDTO> crearPersonaje(@Valid @RequestBody PersonajeCreateDTO personaje) {
@@ -61,6 +60,4 @@ public class PersonajeController {
     public ResponseEntity<PersonajeVaritaAsignadaResponseDTO> asignarPersonajeVarita(@PathVariable("idPersonaje") Integer idPer, @PathVariable("idVarita") Integer idVar) {
         return ResponseEntity.ok(servicio.addVarita(idPer, idVar));
     }
-
-
 }

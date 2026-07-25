@@ -11,18 +11,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/varitas")
 public class VaritaController {
 
     private final VaritaService servicio;
 
-    //constructor
     public VaritaController(VaritaService servicio) {
         this.servicio = servicio;
     }
 
-    //GET
+    //Metodos de OBTENCION
     @GetMapping
     public ResponseEntity<List<VaritaResponseDTO>> getVaritas() {
         return ResponseEntity.ok(servicio.getAll());
@@ -32,7 +31,6 @@ public class VaritaController {
     public ResponseEntity<VaritaResponseDTO> getVaritaById(@PathVariable int id) {
         return ResponseEntity.ok(servicio.getById(id));
     }
-
 
     @GetMapping("/estado")
     //si no indica nada, por defecto seran todas
