@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
+// Controlador de excepciones de la app
 public class HarryPotterExceptionHandler {
     //Recurso no encontrado
     @ExceptionHandler(ResourceNotFound.class)

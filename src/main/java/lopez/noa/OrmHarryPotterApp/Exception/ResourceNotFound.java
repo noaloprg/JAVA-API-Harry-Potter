@@ -2,6 +2,7 @@ package lopez.noa.OrmHarryPotterApp.Exception;
 
 import java.math.BigInteger;
 
+// Excepcion para cuando un recurso no existe o no se ha encontrado
 public class ResourceNotFound extends RuntimeException {
     private static final String MENSAJE_ERROR = "No se encontro";
 
