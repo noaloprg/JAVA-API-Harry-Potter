@@ -1,6 +1,7 @@
 package lopez.noa.OrmHarryPotterApp.Servicios;
 
 import jakarta.transaction.Transactional;
+import lopez.noa.OrmHarryPotterApp.DTO.CasaDTO.CasaCreateDTO;
 import lopez.noa.OrmHarryPotterApp.DTO.HechizoDTO.HechizoCreateDTO;
 import lopez.noa.OrmHarryPotterApp.DTO.HechizoDTO.HechizoResponseDTO;
 import lopez.noa.OrmHarryPotterApp.Exception.AlreadyExistsException;
@@ -35,7 +36,6 @@ public class HechizoService implements IModeloService<HechizoResponseDTO, BigInt
         this.hechizoRepo = hechizoRepo;
     }
 
-    //GET
     @Override
     public List<HechizoResponseDTO> getAll() {
         return hechizoRepo.findAll()
@@ -56,14 +56,26 @@ public class HechizoService implements IModeloService<HechizoResponseDTO, BigInt
         return HechizoMapper.toHechizoResponse(h);
     }
 
-    //getAll pero con paginacion
+    /**
+     *
+     * @param paginacion Paginacion que se obtiene en la peticion
+     * @return lista de {@link  HechizoResponseDTO}
+     */
     public Page<HechizoResponseDTO> getSegunPaginado(Pageable paginacion) {
+        // aplicacion de paginacion directa, atraves del metodo del repositorio
         return hechizoRepo.findAll(paginacion)
                 .map(hechizo -> HechizoMapper.toHechizoResponse(hechizo));
-
     }
 
-    //paginacion mas ordenacion
+    /**
+     * Obtiene todos los hechizos paginados y ordenados (otra forma de paginar)
+     *
+     * @param paginacion     Paginacion de la peticion
+     * @param tipoOrdenacion {@code asc} se ordena de forma ascendente. {@code desc} Se ordena de forma descendente.
+     *                       <p> En caso de que no se reciba nada no se ordenara</p>
+     *                       <p> Es un string porque las peticiones se hacen a traves de URL (string)</p>
+     * @return lista de {@link HechizoResponseDTO}
+     */
     public Page<HechizoResponseDTO> getSegunPaginadoOrdenado(Pageable paginacion, String tipoOrdenacion) {
         //por defecto Sort no ordenara nada
         Sort ordenacion = Sort.unsorted();
@@ -76,7 +88,8 @@ public class HechizoService implements IModeloService<HechizoResponseDTO, BigInt
 
         //crea la paginacion junto con la ordenacion
         Pageable paginacionCompleo = PageRequest.of(
-                /*segun los valores que vengan de la URL del usuario,
+                /*
+                segun los valores que vengan de la URL del usuario,
                  y sino por los valores por defecto que tiene Pageable
                  */
                 paginacion.getPageNumber(),
@@ -89,7 +102,6 @@ public class HechizoService implements IModeloService<HechizoResponseDTO, BigInt
 
     }
 
-    //BORRADO Y ACTUALIZADO
     @Override
     @Transactional
     public HechizoResponseDTO deleteById(BigInteger id) {
@@ -99,6 +111,9 @@ public class HechizoService implements IModeloService<HechizoResponseDTO, BigInt
         return HechizoMapper.toHechizoResponse(hechizo);
     }
 
+    /**
+     * @see CasaService#update(Integer, CasaCreateDTO)
+     */
     @Transactional
     public Hechizo update(BigInteger id, HechizoCreateDTO dto) {
         Hechizo existente = hechizoRepo.findById(id).orElseThrow(() -> new ResourceNotFound(id, NOMBRE_ENTIDAD));
@@ -107,27 +122,39 @@ public class HechizoService implements IModeloService<HechizoResponseDTO, BigInt
         return existente;
     }
 
-
-    //CREACION
+    /**
+     * @see CasaService#create(CasaCreateDTO)
+     */
     @Transactional
-    public Hechizo createHechizo(HechizoCreateDTO dto) {
+    public Hechizo create(HechizoCreateDTO dto) {
         Hechizo hechizo = HechizoMapper.crearHechizoDesdeDTO(dto);
         hechizoRepo.save(hechizo);
         return hechizo;
     }
 
+    /**
+     * Atraves de una lista de DTO crea una serie de hechizos en una sola peticion
+     *
+     * @param listaHechizosCreate Lista de DTOs de creacion de hechizos de tipo  {@link  HechizoCreateDTO}
+     * @return Lista de los hechizos creados de tipo  {@link HechizoResponseDTO}
+     */
     @Transactional
-    public List<HechizoResponseDTO> createMuchosHechizos(List<HechizoCreateDTO> listaHechizosCreate) {
+    public List<HechizoResponseDTO> createMasivo(List<HechizoCreateDTO> listaHechizosCreate) {
+        // lista de los hechizos creados correctamente
         List<HechizoResponseDTO> listaRespuestas = new ArrayList<>();
 
+        // se recorren todos para realizar verificaciones
         for (HechizoCreateDTO dto : listaHechizosCreate) {
             Optional<Hechizo> existente = hechizoRepo.findByNombre(dto.getNombre());
 
+            // verificacion de existencia, para evitar duplicados
             if (existente.isPresent()) throw new AlreadyExistsException(NOMBRE_ENTIDAD);
             else {
-                Hechizo nuevo = HechizoMapper.crearHechizoDesdeDTO(dto);
-                hechizoRepo.save(nuevo);
-                listaRespuestas.add(HechizoMapper.toHechizoResponse(nuevo));
+                // en caso de que no haya registrado un hechizo igual se crea
+                Hechizo hechizoMemoria = HechizoMapper.crearHechizoDesdeDTO(dto);
+                // hechizo con ID de la BD
+                Hechizo hechizoNuevo = hechizoRepo.save(hechizoMemoria);
+                listaRespuestas.add(HechizoMapper.toHechizoResponse(hechizoNuevo));
             }
         }
         return listaRespuestas;

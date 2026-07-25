@@ -71,18 +71,18 @@ public class VaritaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<VaritaSummaryDTO> actualizarVarita(@PathVariable("id") int id, @Valid @RequestBody VaritaCreateDTO var) {
-        return ResponseEntity.ok(servicio.updateVarita(id, var));
+        return ResponseEntity.ok(servicio.update(id, var));
     }
 
     //CREACION
     @PostMapping
     public ResponseEntity<VaritaSummaryDTO> createVarita(@Valid @RequestBody VaritaCreateDTO varita) {
-        return ResponseEntity.ok(servicio.createVarita(varita));
+        return ResponseEntity.ok(servicio.create(varita));
     }
 
     @PostMapping("/crear")
     public ResponseEntity<Boolean> createVaritaAndroidStudio(@Valid @RequestBody VaritaCreateDTO varita) {
-        return ResponseEntity.ok(servicio.createVarita(varita) != null);
+        return ResponseEntity.ok(servicio.create(varita) != null);
 
     }
 }

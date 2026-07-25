@@ -5,6 +5,7 @@ import lopez.noa.OrmHarryPotterApp.DTO.CasaDTO.CasaCreateDTO;
 import lopez.noa.OrmHarryPotterApp.DTO.CasaDTO.CasaResponseDTO;
 import lopez.noa.OrmHarryPotterApp.Exception.ResourceNotFound;
 import lopez.noa.OrmHarryPotterApp.Mappers.CasaMapper;
+import lopez.noa.OrmHarryPotterApp.Mappers.DataHelper;
 import lopez.noa.OrmHarryPotterApp.Modelos.Casa;
 import lopez.noa.OrmHarryPotterApp.Repositorios.CasaRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,6 @@ public class CasaService implements IModeloService<CasaResponseDTO, Integer> {
      */
     private final CasaRepository casaRepository;
 
-
     public CasaService(CasaRepository casaRepo) {
         this.casaRepository = casaRepo;
     }
@@ -42,7 +42,7 @@ public class CasaService implements IModeloService<CasaResponseDTO, Integer> {
 
     @Override
     public CasaResponseDTO getById(Integer id) {
-        Casa casa = casaRepository.findById(id).orElseThrow(() -> new ResourceNotFound(id, NOMBRE_ENTIDAD));
+        Casa casa = casaRepository.findById(id).orElseThrow(() -> new ResourceNotFound(DataHelper.fromIntegerToBigInt(id), NOMBRE_ENTIDAD));
         return CasaMapper.toCasaResponse(casa);
     }
 
@@ -50,22 +50,35 @@ public class CasaService implements IModeloService<CasaResponseDTO, Integer> {
     @Transactional
     public CasaResponseDTO deleteById(Integer id) {
         //manejamos existencia a traves de la busqueda de la entidad
-        Casa casa = casaRepository.findById(id).orElseThrow(() -> new ResourceNotFound(id, NOMBRE_ENTIDAD));
+        Casa casa = casaRepository.findById(id).orElseThrow(() -> new ResourceNotFound(DataHelper.fromIntegerToBigInt(id), NOMBRE_ENTIDAD));
         casaRepository.deleteById(id);
         return CasaMapper.toCasaResponse(casa);
     }
 
+    /**
+     *
+     * @param dto DTO de creacion simple
+     * @return objeto completo con id generado en la BD
+     */
     @Transactional
-    public Casa createCasa(CasaCreateDTO dto) {
+    public Casa create(CasaCreateDTO dto) {
         Casa casa = CasaMapper.crearCasaDesdeDTO(dto);
-        casaRepository.save(casa);
-        return casa;
+        Casa casaGuardada = casaRepository.save(casa);
+        return casaGuardada;
     }
 
+    /**
+     * Actuliza una entidad de casa
+     *
+     * @param id  identificador de la casa
+     * @param dto DTO de tipo {@link CasaCreateDTO} ya que se copian todos los atributos en memoria
+     * @return devuelve le objeto completo
+     */
     @Transactional
     public Casa update(Integer id, CasaCreateDTO dto) {
-        Casa existente = casaRepository.findById(id).orElseThrow(() -> new ResourceNotFound(id, NOMBRE_ENTIDAD));
+        Casa existente = casaRepository.findById(id).orElseThrow(() -> new ResourceNotFound(DataHelper.fromIntegerToBigInt(id), NOMBRE_ENTIDAD));
         CasaMapper.asignarTodosCamposCasa(dto, existente);
+        // en este caso no se crea una nuevo objeto porque el id es el mismo y JPA ya lo actualiza en memoria
         casaRepository.save(existente);
         return existente;
     }

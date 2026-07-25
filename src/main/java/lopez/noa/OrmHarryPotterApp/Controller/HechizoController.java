@@ -45,6 +45,6 @@ public class HechizoController {
     //insert masivo
     @PostMapping("/crear-masivo")
     public ResponseEntity<List<HechizoResponseDTO>> createVariosHechizos(@Valid @RequestBody List<HechizoCreateDTO> listaDto) {
-        return ResponseEntity.ok(servicio.createMuchosHechizos(listaDto));
+        return ResponseEntity.ok(servicio.createMasivo(listaDto));
     }
 }

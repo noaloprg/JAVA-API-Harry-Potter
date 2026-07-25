@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface PersonajeRepository extends JpaRepository<Personaje, Integer> {
     List<Personaje> findByNombreContainingIgnoreCase(String nombre);
-    List<Personaje> findByCasa(Casa casa);
+    List<Personaje> findAllByCasa(Casa casa);
 }
