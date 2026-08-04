@@ -1,161 +1,166 @@
 # ORM Harry Potter API
 
-API REST desarrollada en **Java con Spring Boot**, temática del universo de Harry Potter mediante **JPA/Hibernate** sobre una base de datos relacional con **PostgreSQL**.
+REST API built with **Java and Spring Boot**, set in the Harry Potter universe, using **JPA/Hibernate** on top of a relational **PostgreSQL** database.
 
-## **Indice**
+## **Table of contents**
 
-- [Modelado de datos y relaciones](#️-modelo-de-datos-y-relaciones)
+- [Technologies](#technologies)
 
-- [Funcionalidades y endpoints principales](#funcionalidades-y-endpoints-principales)
-    - [Funcionalidades](#funcionalidades)
-    - [Endpoints](#principales-endpoints)
+- [Data model and relationships](#data-model-and-relationships)
 
-- [Estructura del proyecto](#estructura-del-proyecto)
-- [Puesta en marcha](#puesta-en-marcha)
+- [Features and main endpoints](#features-and-main-endpoints)
+  - [Features](#features)
+  - [Endpoints](#main-endpoints)
 
-## Modelo de datos y relaciones
+- [Project structure](#project-structure)
+- [Running app in local](#run-application-in-local)
+- [Running with Docker](#running-with-docker)
+
+## Technologies
+
+| Technology      | Detail                        |
+| --------------- | ----------------------------- |
+| **Language**    | Java 17                       |
+| **Framework**   | Spring Boot 4.0.1             |
+| **Persistence** | Spring Data JPA / Hibernate   |
+| **Database**    | PostgreSQL                    |
+| **Validation**  | Jakarta Validation (`@Valid`) |
+| **Build tool**  | Gradle (Kotlin DSL)           |
+| **Other**       | DevTools, Jackson (JSON)      |
+
+## Data model and relationships
 
 ```
-Casa (1) ──────< (N) Personaje
-Personaje (1) ──────< (N) Varita        (una varita pertenece a un único personaje, opcional)
-Personaje (N) ──────< (N) Hechizo       (tabla intermedia: personaje_hechizo)
+House (1) ──────< (N) Character
+Character (1) ──────< (N) Wand        (a wand belongs to a single character, optional)
+Character (N) ──────< (N) Spell       (join table: character_spell)
 ```
 
-- **Casa → Personaje**: relación uno a muchos. Una casa no puede eliminarse en cascada arrastrando a sus personajes (se evita evitando `CascadeType.REMOVE`).
-- **Personaje → Varita**: relación uno a muchos opcional. Una varita puede existir sin dueño y puede reasignarse a otro personaje.
-- **Personaje ↔ Hechizo**: relación muchos a muchos mediante tabla intermedia `personaje_hechizo`.
+- **House → Character**: one-to-many relationship. A house cannot be deleted while cascading the deletion of its characters (`CascadeType.REMOVE` is avoided on purpose).
+- **Character → Wand**: optional one-to-many relationship. A wand can exist without an owner and can be reassigned to another character.
+- **Character ↔ Spell**: many-to-many relationship through the join table `character_spell`.
 
-## Funcionalidades y endpoints principales
+## Features and main endpoints
 
-### **Funcionalidades**
+### **Features**
 
-- **CRUD completo** de Casas, Personajes, Varitas y Hechizos.
-- **Creación combinada**: alta de un personaje junto con su varita en una sola petición transaccional.
-- **Asignación de varitas** a personajes, con validaciones de negocio:
-    - No se puede asignar una varita que ya está en uso por otro personaje.
-    - No se puede asignar una varita rota.
-- **Romper una varita** (marcarla como `rota`) sin perder el resto de sus datos.
-- **Búsquedas y filtros**:
-    - Personajes por nombre (coincidencia parcial) o por casa.
-    - Varitas por núcleo, por estado (rotas / no rotas), o si están asignadas a un personaje o no.
-- **Paginación y ordenación** de hechizos (dos variantes: paginado simple y paginado + orden ascendente/descendente).
-- **Alta masiva de hechizos**, evitando duplicados por nombre.
-- **Manejo centralizado de errores** con `@ControllerAdvice`, devolviendo mensajes claros para:
-    - Recurso no encontrado
-    - Relación ya existente / varita ya asignada
-    - Varita rota no asignable
-    - Recurso duplicado
-    - Errores de validación de los DTOs (`@Valid`)
-- **Datos de ejemplo precargados** (`data.sql`) con las 4 casas, varios personajes canónicos (Harry Potter, Hermione, Draco, etc.) y varitas de ejemplo.
+- **Full CRUD** for Houses, Characters, Wands, and Spells.
+- **Combined creation**: create a character together with its wand in a single transactional request.
+- **Wand assignment** to characters, with business rule validations:
+  - A wand that is already in use by another character cannot be assigned.
+  - A broken wand cannot be assigned.
+- **Breaking a wand** (marking it as `broken`) without losing the rest of its data.
+- **Search and filters**:
+  - Characters by name (partial match) or by house.
+  - Wands by core, by status (broken / not broken), or whether they're assigned to a character or not.
+- **Pagination and sorting** for spells (two variants: simple pagination and pagination + ascending/descending order).
+- **Bulk spell creation**, avoiding duplicates by name.
+- **Centralized error handling** with `@ControllerAdvice`, returning clear messages for:
+  - Resource not found
+  - Relationship already exists / wand already assigned
+  - Broken wand cannot be assigned
+  - Duplicate resource
+  - DTO validation errors (`@Valid`)
+- **Preloaded sample data** (`data.sql`) with the 4 houses, several canonical characters (Harry Potter, Hermione, Draco, etc.), and sample wands.
 
-### **Principales endpoints**
+### **Main endpoints**
 
-#### **Casas — `/api/casas`**
+- Base URL: `http://localhost:8050/api`
 
-| Método | Ruta          | Descripción             |
-| ------ | ------------- | ----------------------- |
-| GET    | `/casas`      | Lista todas las casas   |
-| POST   | `/casas`      | Crea una casa           |
-| DELETE | `/casas/{id}` | Elimina una casa por id |
+#### **Houses — `/casas`**
 
-#### **Personajes — `/api/personajes`**
+| Method | Route         | Description           |
+| ------ | ------------- | --------------------- |
+| GET    | `/casas`      | Lists all houses      |
+| POST   | `/casas`      | Creates a house       |
+| DELETE | `/casas/{id}` | Deletes a house by id |
 
-| Método | Ruta                                          | Descripción                                      |
+#### **Characters — `/personajes`**
+
+| Method | Route                                         | Description                                      |
 | ------ | --------------------------------------------- | ------------------------------------------------ |
-| GET    | `/personajes`                                 | Lista todos los personajes                       |
-| GET    | `/personajes/{id}`                            | Obtiene un personaje por id                      |
-| GET    | `/personajes/nombre/{palabra}`                | Busca personajes cuyo nombre contenga la palabra |
-| GET    | `/personajes/casa/{nombreCasa}`               | Lista los personajes de una casa                 |
-| POST   | `/personajes`                                 | Crea un personaje                                |
-| POST   | `/personajes/crear-con-varita`                | Crea un personaje junto con su varita            |
-| PUT    | `/personajes/{idPersonaje}/varita/{idVarita}` | Asigna una varita existente a un personaje       |
+| GET    | `/personajes`                                 | Lists all characters                             |
+| GET    | `/personajes/{id}`                            | Gets a character by id                           |
+| GET    | `/personajes/nombre/{palabra}`                | Searches characters whose name contains the word |
+| GET    | `/personajes/casa/{nombreCasa}`               | Lists the characters of a house                  |
+| POST   | `/personajes`                                 | Creates a character                              |
+| POST   | `/personajes/crear-con-varita`                | Creates a character together with its wand       |
+| PUT    | `/personajes/{idPersonaje}/varita/{idVarita}` | Assigns an existing wand to a character          |
 
-#### **Varitas — `/api/varitas`**
+#### **Wands — `/varitas`**
 
-| Método | Ruta                                      | Descripción                                     |
-| ------ | ----------------------------------------- | ----------------------------------------------- |
-| GET    | `/varitas`                                | Lista todas las varitas                         |
-| GET    | `/varitas/{id}`                           | Obtiene una varita por id                       |
-| GET    | `/varitas/estado?rota=`                   | Filtra varitas rotas / no rotas                 |
-| GET    | `/varitas/nucleo?nucleo=`                 | Busca varitas por núcleo                        |
-| GET    | `/varitas/resumen`                        | Resumen de todas las varitas                    |
-| GET    | `/varitas/ordenadas?descendente=&usadas=` | Varitas ordenadas por longitud, usadas o libres |
-| POST   | `/varitas`                                | Crea una varita                                 |
-| PUT    | `/varitas/{id}`                           | Actualiza una varita                            |
-| PUT    | `/varitas/varita/romper/{id}`             | Marca una varita como rota                      |
+| Method | Route                                     | Description                              |
+| ------ | ----------------------------------------- | ---------------------------------------- |
+| GET    | `/varitas`                                | Lists all wands                          |
+| GET    | `/varitas/{id}`                           | Gets a wand by id                        |
+| GET    | `/varitas/estado?rota=`                   | Filters broken / not broken wands        |
+| GET    | `/varitas/nucleo?nucleo=`                 | Searches wands by core                   |
+| GET    | `/varitas/resumen`                        | Summary of all wands                     |
+| GET    | `/varitas/ordenadas?descendente=&usadas=` | Wands sorted by length, assigned or free |
+| POST   | `/varitas`                                | Creates a wand                           |
+| PUT    | `/varitas/{id}`                           | Updates a wand                           |
+| PUT    | `/varitas/varita/romper/{id}`             | Marks a wand as broken                   |
 
-#### **Hechizos — `/api/hechizos`**
+#### **Spells — `/hechizos`**
 
-| Método | Ruta                                        | Descripción                               |
-| ------ | ------------------------------------------- | ----------------------------------------- |
-| GET    | `/hechizos`                                 | Lista todos los hechizos                  |
-| GET    | `/hechizos/paginados`                       | Lista paginada (5 por página por defecto) |
-| GET    | `/hechizos/paginados2?ordenacion=asc\|desc` | Paginada y ordenada por nombre            |
-| POST   | `/hechizos/crear-masivo`                    | Crea varios hechizos a la vez             |
+| Method | Route                                       | Description                            |
+| ------ | ------------------------------------------- | -------------------------------------- |
+| GET    | `/hechizos`                                 | Lists all spells                       |
+| GET    | `/hechizos/paginados`                       | Paginated list (5 per page by default) |
+| GET    | `/hechizos/paginados2?ordenacion=asc\|desc` | Paginated and sorted by name           |
+| POST   | `/hechizos/crear-masivo`                    | Creates several spells at once         |
 
-### **Manejo de errores**
+### **Error handling**
 
-Todos los errores de negocio devuelven una respuesta JSON clara con `Error` y `Message`, gestionados de forma centralizada:
+All business errors return a clear JSON response with `Error` and `Message`, handled centrally:
 
-- `ResourceNotFound` → recurso (casa, personaje, varita...) no encontrado.
-- `AlreadyExistsException` → el recurso ya existe (p. ej. hechizo duplicado).
-- `AlreadyAssignedExcepction` → la varita ya está asignada a otro personaje.
-- `BrokenWandException` → se intenta asignar una varita rota.
-- Errores de validación (`@Valid`) → devuelve el detalle de los campos inválidos.
+- `ResourceNotFound` → resource (house, character, wand...) not found.
+- `AlreadyExistsException` → the resource already exists (e.g. duplicate spell).
+- `AlreadyAssignedExcepction` → the wand is already assigned to another character.
+- `BrokenWandException` → trying to assign a broken wand.
+- Validation errors (`@Valid`) → returns the details of the invalid fields.
 
-## Tecnologías
-
-| Tecnología        | Detalle                       |
-| ----------------- | ----------------------------- |
-| **Lenguaje**      | Java 17                       |
-| **Framework**     | Spring Boot 4.0.1             |
-| **Persistencia**  | Spring Data JPA / Hibernate   |
-| **Base de datos** | PostgreSQL                    |
-| **Validación**    | Jakarta Validation (`@Valid`) |
-| **Build tool**    | Gradle (Kotlin DSL)           |
-| **Otros**         | DevTools, Jackson (JSON)      |
-
-## Estructura del proyecto
+## Project structure
 
 ```
 src/main/java/lopez/noa/OrmHarryPotterApp/
-├── OrmHarryPotterAppApplication.java   # Clase principal (arranque de Spring Boot)
-├── Controller/                         # Controladores REST
+├── OrmHarryPotterAppApplication.java   # Main class (Spring Boot bootstrap)
+├── Controller/                         # REST controllers
 │   ├── CasaController.java
 │   ├── PersonajeController.java
 │   ├── VaritaController.java
 │   └── HechizoController.java
-├── Servicios/                          # Lógica de negocio
-│   ├── IModeloService.java             # Interfaz común (getAll, getById, deleteById)
+├── Servicios/                          # Business logic
+│   ├── IModeloService.java             # Common interface (getAll, getById, deleteById)
 │   ├── CasaService.java
 │   ├── PersonajeService.java
 │   ├── VaritaService.java
 │   └── HechizoService.java
-├── Repositorios/                       # Interfaces Spring Data JPA
+├── Repositorios/                       # Spring Data JPA interfaces
 │   ├── CasaRepository.java
 │   ├── PersonajeRepository.java
 │   ├── VaritaRepository.java
 │   └── HechizoRepository.java
-├── Modelos/                            # Entidades JPA
+├── Modelos/                            # JPA entities
 │   ├── Casa.java
 │   ├── Personaje.java
 │   ├── Varita.java
 │   ├── Hechizo.java
 │   ├── TipoSangre.java
 │   └── TipoHechizo.java
-├── DTO/                                 # Objetos de transferencia (entrada/salida)
+├── DTO/                                 # Data transfer objects (input/output)
 │   ├── CasaDTO/
 │   ├── PersonajeDTO/
 │   ├── VaritaDTO/
 │   └── HechizoDTO/
-├── Mappers/                             # Conversión Entidad <-> DTO
+├── Mappers/                             # Entity <-> DTO conversion
 │   ├── CasaMapper.java
 │   ├── PersonajeMapper.java
 │   ├── VaritaMapper.java
 │   ├── VaritaMapperHelper.java
 │   ├── HechizoMapper.java
 │   └── DataHelper.java
-└── Exception/                           # Excepciones personalizadas + handler global
+└── Exception/                           # Custom exceptions + global handler
     ├── ResourceNotFound.java
     ├── AlreadyExistsException.java
     ├── AlreadyAssignedExcepction.java
@@ -163,54 +168,76 @@ src/main/java/lopez/noa/OrmHarryPotterApp/
     └── HarryPotterExceptionHandler.java
 
 src/main/resources/
-├── application.properties               # Configuración de la app y la BD
-└── data.sql                             # Datos de ejemplo (casas, personajes, varitas)
+├── application.properties               # App and database configuration
+└── data.sql                             # Sample data (houses, characters, wands)
 ```
 
-## Puesta en marcha
+## Run application in local
 
-### Requisitos previos
+### Prerequisites
 
-- **JDK 17** o superior.
-- **PostgreSQL** en ejecución (local o remoto).
-- No es necesario instalar Gradle: el proyecto incluye el wrapper (`gradlew` / `gradlew.bat`).
+- **JDK 17** or higher.
+- **PostgreSQL** running / installed (local or remote).
+- No need to install Gradle: the project includes the wrapper (`gradlew` / `gradlew.bat`).
 
-### Configuración de la base de datos
+### Database setup
 
-Antes de arrancar, crea una base de datos en PostgreSQL llamada `ad_harry_potter` (o ajusta el nombre en `application.properties`):
+Before starting, create a PostgreSQL database named `ad_harry_potter` (or adjust the name in `application.properties`):
 
 ```sql
 CREATE DATABASE ad_harry_potter;
 ```
 
-Revisa/edita `src/main/resources/application.properties` con tus credenciales:
+Review/edit `src/main/resources/application.properties` with your credentials.
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/ad_harry_potter
-spring.datasource.username=postgres
-spring.datasource.password=openpgpwd
-```
+> [!NOTE]
+> the two `spring.datasource.url` options above: use the `host.docker.internal` one when the **application** runs inside a Docker container (see [Running with Docker](#running-with-docker)) and needs to reach a PostgreSQL instance running on your host machine; use `localhost` when running the app directly on your machine with Gradle.
 
-> ⚠️ Por seguridad, en un entorno real conviene mover usuario/contraseña a variables de entorno en lugar de dejarlos en texto plano en el repositorio.
-
-### Ejecución
+### Running
 
 ```bash
 # Linux / macOS
 ./gradlew bootRun
 
 # Windows
-gradlew.bat bootRun
+./gradlew.bat bootRun
 ```
 
-La API arrancará en:
+The API will start at:
 
 ```
 http://localhost:8050/api
 ```
 
-(puerto `8050` y prefijo `/api`, definidos en `application.properties`).
+(port `8050` and prefix `/api`, defined in `application.properties`).
 
-### Datos iniciales
+### Initial data
 
-El proyecto incluye un script `data.sql` con datos de ejemplo. Actualmente está desactivado por defecto (`spring.sql.init.mode=never`) para evitar duplicados al reiniciar la app, ya que `ddl-auto=update` no borra los datos existentes. Si quieres cargar los datos de ejemplo la primera vez, cambia esa propiedad a `always` antes del primer arranque.
+The project includes a `data.sql` script with sample data. It is disabled by default (`spring.sql.init.mode=never`) to avoid duplicates on restart, since `ddl-auto=update` does not delete existing data. If you want to load the sample data on the very first run, set that property to `always` before the first startup.
+
+## Running with Docker
+
+The project includes a `Dockerfile` to build and run the application in a container. **Only the application itself is containerized here** — PostgreSQL is expected to run separately (locally on your host, or in its own container).
+
+What this image does:
+
+1. Starts from an official `gradle:7.2.0-jdk17-alpine` image (from Docker Hub) that already includes Gradle and JDK 17.
+2. Copies only the Gradle wrapper/config files first and runs `./gradlew dependencies`, so dependencies get cached in a Docker layer and aren't re-downloaded on every rebuild unless those files change.
+3. Copies the actual source code (`src`) and builds the executable jar with `./gradlew bootJar`, skipping tests (`-x test`) to keep the build fast.
+4. Exposes port `8050` (must match `server.port` in `application.properties`).
+5. Runs the generated jar with `java -jar`.
+
+### Build and run the container
+
+```bash
+# Build the image
+docker build -t orm-harry-potter-app .
+
+# Run the container
+docker run -p 8050:8050 orm-harry-potter-app
+```
+
+Since PostgreSQL runs outside this container, `application.properties` points to it via `host.docker.internal`, which lets a container reach services running on your host machine (works out of the box on Docker Desktop for Windows/Mac; on Linux you may need to add `--add-host=host.docker.internal:host-gateway` to the `docker run` command).
+
+> [!TIP]
+> If you'd rather containerize PostgreSQL as well (so both the app and the database run in Docker), you'd need a `docker-compose.yml` with both services and change the datasource URL to point to the Postgres service name instead of `host.docker.internal`. Let me know if you want that set up too.
